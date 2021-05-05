@@ -48,7 +48,7 @@ if __name__ == "__main__":
         backup(pub_outname, time_stamp)
 
     # print(data)
-    out = ", ".join(columns) + "\n"
+    out = ",".join(columns) + "\n"
     out += '\n'.join([", ".join(x) for x in data])
     with open(pub_outname, 'w') as f:
         f.write(out)

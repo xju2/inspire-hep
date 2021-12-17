@@ -2,9 +2,12 @@
 
 import urllib.request, json
 
-def citations(id_type, id_value):
+def citations(id_type, id_value, debug=False):
     inspire_api = f'https://inspirehep.net/api/{id_type}/{id_value}'
+    if debug: print(f"launching API: {inspire_api}")
     data = json.loads(urllib.request.urlopen(inspire_api).read())
+    if debug:
+        print(data)
     meta = data['metadata']
     bibtex_url = data['links']['bibtex']
     bibtex = urllib.request.urlopen(bibtex_url).read()

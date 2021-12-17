@@ -25,7 +25,9 @@ if __name__ == "__main__":
     print(f"Input information type: {info_type}")
     with open(filename, 'r') as f:
         if info_type == 'arxiv':
-            inspire_ids = [arxiv.find_index(line[:-1]) for line in f]
+            inspire_ids = [
+                arxiv.find_index(line[:-1] if '\n' in line else line)
+                for line in f]
         else:
             inspire_ids = [line[:-1] for line in f]
     

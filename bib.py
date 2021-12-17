@@ -1,3 +1,4 @@
+import os
 import bibtexparser
 from bibtexparser.bwriter import BibTexWriter
 
@@ -11,6 +12,21 @@ def correct_lhc_authors(bib_tex):
     writer = BibTexWriter()
     return writer.write(bib_data)
 
+def reformat(bib_file):
+    if not os.path.exists(bib_file):
+        print(f"{bib_file} does not exist.")
+
+    with open(bib_file) as f:
+        bib_data = bibtexparser.load(f)
+
+    # change author to Collaborations
+    for entry in bib_data.entries:   
+        entry['author'] = entry['collaboration'] + " Collaboration"
+
+    # write the updated bib into file
+    writer = BibTexWriter()
+    with open(bib_file, 'w') as f:
+        f.write(writer.write(bib_data))
 
 if __name__ == '__main__':
     import argparse

@@ -11,11 +11,13 @@ if __name__ == "__main__":
     add_arg("filename", help='input file containing arxiv ids')
     add_arg("-t", "--type", help='entry information', default='arxiv', choices=['inspire', 'arxiv'])
     add_arg("-d", "--debug", action='store_true', help="in a debug mode")
+    add_arg('-o', '--outname', help='output filename', default=None)
     args = parser.parse_args()
 
     filename = args.filename
     debug = args.debug
     info_type = args.type
+    outname = args.outname
     if not os.path.exists(filename):
         print(f"{filename} does not exit.")
         exit(0)
@@ -37,7 +39,7 @@ if __name__ == "__main__":
     data = []
 
     for inspire_id in inspire_ids:
-        print("procesing {}".format(inspire_id))
+        print(f"procesing {info_type} with id {inspire_id}")
         try:
             if info_type == "arxiv":
                 res = citations('arxiv', inspire_id, debug=debug)
@@ -53,5 +55,8 @@ if __name__ == "__main__":
         data.append(info)
         out_bib += res['bibtex'] + "\n"
 
-
-    print(out_bib)
+    if outname is None:
+        print(out_bib)
+    else:
+        with open(outname, 'w') as f:
+            f.write(out_bib)

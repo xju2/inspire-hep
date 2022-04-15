@@ -17,8 +17,8 @@ if __name__ == "__main__":
     add_arg("-b", "--backup", help="backup existing files")
     args = parser.parse_args()
 
-
-    os.makedirs(args.outdir, exist_ok=True)
+    outdir = args.outdir
+    os.makedirs(outdir, exist_ok=True)
 
     time_stamp = time.strftime('%Y%m%d-%H%M%S', time.localtime())
 
@@ -40,13 +40,13 @@ if __name__ == "__main__":
         data.append(info)
         out_bib += res['bibtex'] + "\n"
 
-    bib_outname = 'mypub.bib'
+    bib_outname = os.path.join(outdir, 'mypub.bib')
     if args.backup:
         backup(bib_outname, time_stamp)
     with open(bib_outname, 'w') as f:
         f.write(out_bib)
 
-    pub_outname = "mypub.csv"
+    pub_outname = os.path.join(outdir, "mypub.csv")
     if args.backup:
         backup(pub_outname, time_stamp)
 

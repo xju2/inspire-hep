@@ -1,7 +1,8 @@
-
+#!/usr/bin/python
 
 if __name__ == "__main__":
     import os
+    import time
     import argparse
     import arxiv
     from citations import citations
@@ -31,7 +32,7 @@ if __name__ == "__main__":
         else:
             inspire_ids = [line[:-1] for line in f]
     
-    import time
+
     time_stamp = time.strftime('%Y%m%d-%H%M%S', time.localtime())
 
     out_bib = ""

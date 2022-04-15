@@ -4,11 +4,6 @@ from citations import citations
 from mypub import inspire_ids
 import bibtexparser
 
-def backup(filename, timeinfo):
-    os.makedirs('backup')
-    if os.path.exists(filename):
-        os.rename(filename, os.path.join('backup', filename+".{}".format(timeinfo)))
-
 def get_link(bib_str):
     bib_entry = bibtexparser.loads(bib_str)
     bib_entry = bib_entry.entries[0]
@@ -31,13 +26,16 @@ def get_citation_info(bib_str):
         if "numbers" in bib_entry:
             j_data.append(f"no.{bib_entry['numbers']}")
         if "pages" in bib_entry:
-            j_data.append(f"pp.{bib_entry['pages']}")
+            j_data.append(f"{bib_entry['pages']}")
         journal = " ".join(j_data)
     elif "eprint" in bib_entry:
         journal = f"arxiv:{bib_entry['eprint']}"
     else:
         journal = None
     return journal
+
+def fix_title(title):
+    title = title.replace("\\", "\\\\")
 
 def get_pub_info(paper_info):
     title = paper_info['title']
@@ -47,7 +45,7 @@ def get_pub_info(paper_info):
 
     out = '\n'.join([
         '---',
-        f"title: {title}",
+        f'title: "{title}"',
         f"date: {date}",
         f"venue: {venue}",
         f"link: {link}",
@@ -98,8 +96,7 @@ if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser(description="update my publication")
     add_arg = parser.add_argument
-    add_arg("-o", '--outdir', help="output directory", default='data')
-    add_arg("-b", "--backup", help="backup existing files")
+    add_arg("-o", '--outdir', help="output directory", default='publications')
     args = parser.parse_args()
 
     outdir = args.outdir

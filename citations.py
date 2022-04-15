@@ -2,13 +2,16 @@
 
 import urllib.request, json
 import bib as bibHelper
+import pprint
+
+pp = pprint.PrettyPrinter(indent=2)
 
 def citations(id_type, id_value, debug=False):
     inspire_api = f'https://inspirehep.net/api/{id_type}/{id_value}'
     if debug: print(f"launching API: {inspire_api}")
     data = json.loads(urllib.request.urlopen(inspire_api).read())
     if debug:
-        print(data)
+        pp.pprint(data)
     meta = data['metadata']
     bibtex_url = data['links']['bibtex']
     bibtex = urllib.request.urlopen(bibtex_url).read()
@@ -30,6 +33,12 @@ def citations(id_type, id_value, debug=False):
     except KeyError:
         arxiv_eprint = arxiv_category = prepring_date = "N/A"
 
+    # replace preprint date with the publication date
+    try: 
+        prepring_date = meta['imprint'][0]['date']
+    except KeyError:
+        pass
+
     return {
         "texkeys": meta['texkeys'][0],
         "citation_count": meta['citation_count'],
@@ -48,8 +57,10 @@ if __name__ == "__main__":
     add_arg = parser.add_argument
     add_arg("--id-type", help="identification type",
         choices=['literature', 'doi', 'arxiv'], default='literature')
-    add_arg("--id-value", help='identfication value', required=True)
+    add_arg("--id-value", help='identfication value', default=1851403)
+    add_arg('-d', '--debug', help='debug mode', action='store_true')
     
     args = parser.parse_args()
-    res = citations(args.id_type, args.id_value)
-    print(res)
+    res = citations(args.id_type, args.id_value, args.debug)
+    print("\n")
+    pp.pprint(res)

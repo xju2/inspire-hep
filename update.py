@@ -1,4 +1,8 @@
 import os
+import time
+from citations import citations
+from mypub import inspire_ids
+
 def backup(filename, timeinfo):
     os.makedirs('backup')
     if os.path.exists(filename):
@@ -9,14 +13,13 @@ if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser(description="update my publication")
     add_arg = parser.add_argument
+    add_arg("outdir", help="output directory")
     add_arg("-b", "--backup", help="backup existing files")
     args = parser.parse_args()
 
 
-    from citations import citations
-    from mypub import inspire_ids
+    os.makedirs(args.outdir, exist_ok=True)
 
-    import time
     time_stamp = time.strftime('%Y%m%d-%H%M%S', time.localtime())
 
     out_bib = ""

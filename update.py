@@ -13,7 +13,7 @@ if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser(description="update my publication")
     add_arg = parser.add_argument
-    add_arg("outdir", help="output directory")
+    add_arg("-o", '--outdir', help="output directory", default='data')
     add_arg("-b", "--backup", help="backup existing files")
     args = parser.parse_args()
 

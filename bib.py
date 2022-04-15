@@ -5,8 +5,10 @@ from bibtexparser.bwriter import BibTexWriter
 def correct_lhc_authors(bib_tex):
     bib_data = bibtexparser.loads(bib_tex)
     entry = bib_data.entries[0]
-    print(entry['collaboration'])
-    entry['author'] = entry['collaboration'] + " Collaboration"
+    if "collaboration" in entry:
+        entry['author'] = entry['collaboration'] + " Collaboration"
+        # print(entry['collaboration'])
+        del entry['collaboration']
     bib_data.entries = [entry]
 
     writer = BibTexWriter()

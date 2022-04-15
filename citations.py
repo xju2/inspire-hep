@@ -1,6 +1,7 @@
 #!/usr/bin/env python 
 
 import urllib.request, json
+import bib as bibHelper
 
 def citations(id_type, id_value, debug=False):
     inspire_api = f'https://inspirehep.net/api/{id_type}/{id_value}'
@@ -13,6 +14,7 @@ def citations(id_type, id_value, debug=False):
     bibtex = urllib.request.urlopen(bibtex_url).read()
     if type(bibtex) is bytes:
         bibtex = bibtex.decode("utf-8")
+        bibtex = bibHelper.correct_lhc_authors(bibtex)
     
     # maybe the paper is not submitted to a journal yet
     try:

@@ -3,6 +3,7 @@ import time
 from citations import citations
 from mypub import inspire_ids
 import bibtexparser
+import datetime
 
 def get_link(bib_str):
     bib_entry = bibtexparser.loads(bib_str)
@@ -36,12 +37,24 @@ def get_citation_info(bib_str):
 
 def fix_title(title):
     title = title.replace("\\", "\\\\")
+    return title
+
+def fix_date(date_text):
+    new_date =date_text
+    try:
+        datetime.datetime.strptime(date_text, '%Y-%m-%d')
+    except ValueError:
+        # raise ValueError("Incorrect data format, should be YYYY-MM-DD")
+        # <TODO> more date formats
+        new_date = date_text + "-01"
+    return new_date
 
 def get_pub_info(paper_info):
-    title = paper_info['title']
+    title = fix_title(paper_info['title'])
     link = get_link(paper_info['bibtex'])
-    date = paper_info['preprint_date']
+    date = fix_date(paper_info['preprint_date'])
     venue = get_citation_info(paper_info['bibtex'])
+    inspire_id = paper_info['inspire_id']
 
     out = '\n'.join([
         '---',
@@ -49,6 +62,7 @@ def get_pub_info(paper_info):
         f"date: {date}",
         f"venue: {venue}",
         f"link: {link}",
+        f'inspire_id: {inspire_id}',
         '---'
         ])
     return [date, out]

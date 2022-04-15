@@ -49,6 +49,7 @@ def citations(id_type, id_value, debug=False):
         'preprint_date': prepring_date,
         "title": meta['titles'][0]['title'],
         "bibtex": bibtex,
+        "inspire_id": data['id'],
     }
 
 if __name__ == "__main__":

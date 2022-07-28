@@ -93,6 +93,7 @@ class csv_handler(object):
     def write(self):
         # write csv file
         with open(os.path.join(self.outdir, 'mypub.csv'), 'w') as f:
+            f.write(','.join(self.columns) + "\n")
             f.write('\n'.join(','.join(x) for x in self.csv_data))
 
         # write bib file

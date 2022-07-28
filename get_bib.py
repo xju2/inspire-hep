@@ -28,7 +28,7 @@ if __name__ == "__main__":
         if info_type == 'arxiv':
             inspire_ids = [
                 arxiv.find_index(line[:-1] if '\n' in line else line)
-                for line in f]
+                for line in f if line[0] != '#']
         else:
             inspire_ids = [line[:-1] for line in f if line[0] != '#']
     

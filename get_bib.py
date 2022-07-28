@@ -30,7 +30,7 @@ if __name__ == "__main__":
                 arxiv.find_index(line[:-1] if '\n' in line else line)
                 for line in f]
         else:
-            inspire_ids = [line[:-1] for line in f]
+            inspire_ids = [line[:-1] for line in f if line[0] != '#']
     
 
     time_stamp = time.strftime('%Y%m%d-%H%M%S', time.localtime())

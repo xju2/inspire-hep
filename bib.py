@@ -6,9 +6,12 @@ def correct_lhc_authors(bib_tex):
     bib_data = bibtexparser.loads(bib_tex)
     entry = bib_data.entries[0]
     if "collaboration" in entry:
-        entry['author'] = entry['collaboration'] + " Collaboration"
+        # remove author and keep collaboration
+        entry['author'] = ""
+
+        # entry['author'] = entry['collaboration'] + " Collaboration"
         # print(entry['collaboration'])
-        del entry['collaboration']
+        # del entry['collaboration']
     bib_data.entries = [entry]
 
     writer = BibTexWriter()
@@ -22,8 +25,8 @@ def reformat(bib_file):
         bib_data = bibtexparser.load(f)
 
     # change author to Collaborations
-    for entry in bib_data.entries:   
-        entry['author'] = entry['collaboration'] + " Collaboration"
+    # for entry in bib_data.entries:   
+    #     entry['author'] = entry['collaboration'] + " Collaboration"
 
     # write the updated bib into file
     writer = BibTexWriter()

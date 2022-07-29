@@ -32,11 +32,15 @@ https://arxiv.org/abs/2201.08269
 1109.6034
 1510.07488
 1809.02816
+# CMS Higgs -> tautau
+http://arxiv.org/abs/2110.04836
+http://arxiv.org/abs/2107.11486
+http://arxiv.org/abs/2011.03652
+http://arxiv.org/abs/2204.12957
+http://arxiv.org/abs/2205.05120
 # CMS Tau Analysis
 1708.00373
 1707.02909
-1811.08856
-1808.00336
 2002.05315
 1803.06553
 1807.07915

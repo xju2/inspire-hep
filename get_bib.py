@@ -1,11 +1,28 @@
 #!/usr/bin/python
+import arxiv
+from citations import citations
+from multiprocessing import Pool
+from functools import partial
+
+def process(inspire_id, info_type, debug=False):
+    if debug:
+        print(f"procesing {info_type} with id {inspire_id}")
+    try:
+        if info_type == "arxiv":
+            res = citations('arxiv', inspire_id, debug=debug)
+        else:
+            res = citations('literature', inspire_id)
+    except Exception as inst:
+        print(type(inst), inst.args)
+        print("Skipping {}".format(inspire_id))
+
+    return res['bibtex']
+
 
 if __name__ == "__main__":
     import os
     import time
     import argparse
-    import arxiv
-    from citations import citations
 
     parser = argparse.ArgumentParser(description="get bib for a list of articles")
     add_arg = parser.add_argument
@@ -13,12 +30,15 @@ if __name__ == "__main__":
     add_arg("-t", "--type", help='entry information', default='arxiv', choices=['inspire', 'arxiv'])
     add_arg("-d", "--debug", action='store_true', help="in a debug mode")
     add_arg('-o', '--outname', help='output filename', default=None)
+    add_arg('-w', '--workers', default=1, type=int, help="number of processes")
     args = parser.parse_args()
 
     filename = args.filename
     debug = args.debug
     info_type = args.type
     outname = args.outname
+    workers = args.workers
+
     if not os.path.exists(filename):
         print(f"{filename} does not exit.")
         exit(0)
@@ -35,31 +55,16 @@ if __name__ == "__main__":
 
     time_stamp = time.strftime('%Y%m%d-%H%M%S', time.localtime())
 
-    out_bib = ""
-    columns = [
-        "texkeys", 'arxiv_eprints', 'preprint_date', 'citation_count',
-        "citation_count_without_self_citations", 'doi', 'title']
-    data = []
+    if workers < 2:
+        out_bib = [process(idx, info_type, debug) for idx in inspire_ids]
+    else:
+        # multiprocessing
+        with Pool(workers) as p:
+            out_bib = p.map(partial(process, info_type=info_type, debug=debug), inspire_ids)
 
-    for inspire_id in inspire_ids:
-        print(f"procesing {info_type} with id {inspire_id}")
-        try:
-            if info_type == "arxiv":
-                res = citations('arxiv', inspire_id, debug=debug)
-            else:
-                res = citations('literature', inspire_id)
-        except Exception as inst:
-            print(type(inst), inst.args)
-            print("Skipping {}".format(inspire_id))
-            continue
-
-        info = [str(res[x]) for x in columns]
-        info[-1] = '"{}"'.format(info[-1])
-        data.append(info)
-        out_bib += res['bibtex'] + "\n"
 
     if outname is None:
-        print(out_bib)
+        print('\n'.join(out_bib))
     else:
         with open(outname, 'w') as f:
-            f.write(out_bib)
+            f.write('\n'.join(out_bib))

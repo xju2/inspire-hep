@@ -2,10 +2,14 @@ import os
 import time
 import glob
 import re
+from typing import List, Any
+
 from citations import citations
 from mypub import inspire_ids
 import bibtexparser
 import datetime
+from functools import partial
+from multiprocessing import Pool
 
 
 def get_link(bib_str):
@@ -72,7 +76,7 @@ def get_pub_info(paper_info):
     ])
     return [date, out]
 
-class csv_handler(object):
+class pubWriter(object):
     def __init__(self, outdir, mode='u'):
         self.outdir = outdir
         self.mode = mode
@@ -96,11 +100,16 @@ class csv_handler(object):
         self.bib_data.append(bib_entry)
         self.pub_data.append(get_pub_info(paper_info))
 
+    def add_all(self, paper_infos: List[Any]):
+        for paper_info in paper_infos:
+            self.add(paper_info)
+
     def write(self):
         # write csv file
         mode = 'a' if self.mode == 'a' else 'w'
         with open(os.path.join(self.outdir, 'mypub.csv'), mode) as f:
             if self.mode != 'a':
+                # write header
                 f.write(','.join(self.columns) + "\n")
             f.write('\n'.join(','.join(x) for x in self.csv_data))
 
@@ -123,7 +132,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="update my publication")
     add_arg = parser.add_argument
     add_arg("-o", '--outdir', help="output directory", default='publications')
-    add_arg("-m", '--mode', help="update mode", default='a', choices=['a', 'u'])
+    add_arg("-m", '--mode', help="update mode", default='u', choices=['a', 'u'])
+    add_arg("-w", '--workers', help="number of workers", default=1, type=int)
     args = parser.parse_args()
 
     outdir = args.outdir
@@ -131,17 +141,16 @@ if __name__ == "__main__":
 
     time_stamp = time.strftime('%Y%m%d-%H%M%S', time.localtime())
 
-    writer = csv_handler(outdir=outdir, mode=args.mode)
+    writer = pubWriter(outdir=outdir, mode=args.mode)
 
-    for inspire_id in inspire_ids:
-        print("procesing {}".format(inspire_id))
-        try:
-            res = citations('literature', inspire_id)
-        except Exception as inst:
-            print(type(inst), inst.args)
-            print("Skipping {}".format(inspire_id))
-            continue
 
-        writer.add(res)
+    if args.workers > 1:
+        pool = Pool(args.workers)
+        p_cite = partial(citations, 'literature')
+        results = pool.map(p_cite, inspire_ids)
+    else:
+        results = [citations('literature', inspire_id) for inspire_id in inspire_ids]
 
+    print("total number of papers: ", len(results))
+    writer.add_all(results)
     writer.write()

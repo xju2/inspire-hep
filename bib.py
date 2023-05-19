@@ -25,7 +25,7 @@ def reformat(bib_file):
         bib_data = bibtexparser.load(f)
 
     # change author to Collaborations
-    # for entry in bib_data.entries:   
+    # for entry in bib_data.entries:
     #     entry['author'] = entry['collaboration'] + " Collaboration"
 
     # write the updated bib into file
@@ -39,7 +39,6 @@ if __name__ == '__main__':
     add_arg = parser.add_argument
 
     args = parser.parse_args()
-    
 
     bib_tex = """@article{CMS:2019ybf,
     author = "Sirunyan, Albert M and others",

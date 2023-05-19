@@ -45,9 +45,9 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='')
     add_arg = parser.add_argument
     # add_arg('', help='')
-    
+
     args = parser.parse_args()
-    
+
     url = "https://arxiv.org/abs/1909.03460v1"
     print(url_to_index(url))
 

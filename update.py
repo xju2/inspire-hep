@@ -2,11 +2,11 @@ import os
 import time
 import glob
 import re
-from typing_extensions import Self
 from citations import citations
 from mypub import inspire_ids
 import bibtexparser
 import datetime
+
 
 def get_link(bib_str):
     bib_entry = bibtexparser.loads(bib_str)
@@ -21,12 +21,13 @@ def get_link(bib_str):
     else:
         return None
 
+
 def get_citation_info(bib_str):
     bib_entry = bibtexparser.loads(bib_str)
     bib_entry = bib_entry.entries[0]
     if "journal" in bib_entry:
         j_data = [bib_entry['journal'], bib_entry['volume'],
-                f"({bib_entry['year']})"]
+                  f"({bib_entry['year']})"]
         if "numbers" in bib_entry:
             j_data.append(f"no.{bib_entry['numbers']}")
         if "pages" in bib_entry:
@@ -43,7 +44,7 @@ def fix_title(title):
     return title
 
 def fix_date(date_text):
-    new_date =date_text
+    new_date = date_text
     try:
         datetime.datetime.strptime(date_text, '%Y-%m-%d')
     except ValueError:
@@ -51,6 +52,7 @@ def fix_date(date_text):
         # <TODO> more date formats
         new_date = date_text + "-01"
     return new_date
+
 
 def get_pub_info(paper_info):
     title = fix_title(paper_info['title'])
@@ -67,9 +69,9 @@ def get_pub_info(paper_info):
         f"link: {link}",
         f'inspire_id: {inspire_id}',
         '---'
-        ])
+    ])
     return [date, out]
-   
+
 class csv_handler(object):
     def __init__(self, outdir, mode='u'):
         self.outdir = outdir
@@ -85,8 +87,7 @@ class csv_handler(object):
         self.bib_data = []
         # save publication data for personal website
         self.pub_data = []
-        
-    
+
     def add(self, paper_info):
         info = [str(paper_info[x]) for x in self.columns]
         info[-1] = '"{}"'.format(info[-1])
@@ -109,10 +110,10 @@ class csv_handler(object):
 
         # write pub file
         pattern = re.compile(r'.*p([0-9]*).md')
-        pub_md_idx = max([int(pattern.search(os.path.basename(x)).groups()[0]) \
-            for x in glob.glob(self.outdir+"/*.md")]) if self.mode=='a' else 0
+        pub_md_idx = max([int(pattern.search(os.path.basename(x)).groups()[0])
+                          for x in glob.glob(self.outdir + "/*.md")]) if self.mode == 'a' else 0
 
-        for idx,pub in enumerate(reversed(self.pub_data)):
+        for idx, pub in enumerate(reversed(self.pub_data)):
             index = pub_md_idx + idx + 1
             with open(os.path.join(self.outdir, f"{pub[0]}-p{index}.md"), 'w') as f:
                 f.write(pub[1])

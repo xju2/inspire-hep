@@ -1,6 +1,7 @@
-#!/usr/bin/env python 
+#!/usr/bin/env python
 
-import urllib.request, json
+import urllib.request
+import json
 import bib as bibHelper
 import pprint
 
@@ -8,7 +9,8 @@ pp = pprint.PrettyPrinter(indent=2)
 
 def citations(id_type, id_value, debug=False):
     inspire_api = f'https://inspirehep.net/api/{id_type}/{id_value}'
-    if debug: print(f"launching API: {inspire_api}")
+    if debug:
+        print(f"launching API: {inspire_api}")
     data = json.loads(urllib.request.urlopen(inspire_api).read())
     if debug:
         pp.pprint(data)
@@ -18,7 +20,7 @@ def citations(id_type, id_value, debug=False):
     if type(bibtex) is bytes:
         bibtex = bibtex.decode("utf-8")
         bibtex = bibHelper.correct_lhc_authors(bibtex)
-    
+
     # maybe the paper is not submitted to a journal yet
     try:
         doi = meta['dois'][0]['value']
@@ -34,7 +36,7 @@ def citations(id_type, id_value, debug=False):
         arxiv_eprint = arxiv_category = prepring_date = "N/A"
 
     # replace preprint date with the publication date
-    try: 
+    try:
         prepring_date = meta['imprint'][0]['date']
     except KeyError:
         pass
@@ -57,10 +59,10 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Fetch citations for HEP articles")
     add_arg = parser.add_argument
     add_arg("--id-type", help="identification type",
-        choices=['literature', 'doi', 'arxiv'], default='literature')
+            choices=['literature', 'doi', 'arxiv'], default='literature')
     add_arg("--id-value", help='identfication value', default=1851403)
     add_arg('-d', '--debug', help='debug mode', action='store_true')
-    
+
     args = parser.parse_args()
     res = citations(args.id_type, args.id_value, args.debug)
     print("\n")

@@ -1,5 +1,8 @@
 import os
 import time
+import glob
+import re
+from typing_extensions import Self
 from citations import citations
 from mypub import inspire_ids
 import bibtexparser
@@ -68,8 +71,9 @@ def get_pub_info(paper_info):
     return [date, out]
    
 class csv_handler(object):
-    def __init__(self, outdir):
+    def __init__(self, outdir, mode='u'):
         self.outdir = outdir
+        self.mode = mode
         self.columns = [
             "texkeys", 'arxiv_eprints', 'preprint_date',
             'citation_count', "citation_count_without_self_citations",
@@ -81,6 +85,7 @@ class csv_handler(object):
         self.bib_data = []
         # save publication data for personal website
         self.pub_data = []
+        
     
     def add(self, paper_info):
         info = [str(paper_info[x]) for x in self.columns]
@@ -92,26 +97,32 @@ class csv_handler(object):
 
     def write(self):
         # write csv file
-        with open(os.path.join(self.outdir, 'mypub.csv'), 'w') as f:
-            f.write(','.join(self.columns) + "\n")
+        mode = 'a' if self.mode == 'a' else 'w'
+        with open(os.path.join(self.outdir, 'mypub.csv'), mode) as f:
+            if self.mode != 'a':
+                f.write(','.join(self.columns) + "\n")
             f.write('\n'.join(','.join(x) for x in self.csv_data))
 
         # write bib file
-        with open(os.path.join(self.outdir, 'mypub.bib'), 'w') as f:
+        with open(os.path.join(self.outdir, 'mypub.bib'), mode) as f:
             f.write('\n'.join(self.bib_data))
 
         # write pub file
+        pattern = re.compile(r'.*p([0-9]*).md')
+        pub_md_idx = max([int(pattern.search(os.path.basename(x)).groups()[0]) \
+            for x in glob.glob(self.outdir+"/*.md")]) if self.mode=='a' else 0
+
         for idx,pub in enumerate(reversed(self.pub_data)):
-            index = idx + 1
+            index = pub_md_idx + idx + 1
             with open(os.path.join(self.outdir, f"{pub[0]}-p{index}.md"), 'w') as f:
                 f.write(pub[1])
-
 
 if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser(description="update my publication")
     add_arg = parser.add_argument
     add_arg("-o", '--outdir', help="output directory", default='publications')
+    add_arg("-m", '--mode', help="update mode", default='a', choices=['a', 'u'])
     args = parser.parse_args()
 
     outdir = args.outdir
@@ -119,7 +130,7 @@ if __name__ == "__main__":
 
     time_stamp = time.strftime('%Y%m%d-%H%M%S', time.localtime())
 
-    writer = csv_handler(outdir=outdir)
+    writer = csv_handler(outdir=outdir, mode=args.mode)
 
     for inspire_id in inspire_ids:
         print("procesing {}".format(inspire_id))

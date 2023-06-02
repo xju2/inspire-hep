@@ -19,5 +19,7 @@ if __name__ == '__main__':
 
     tot_pub = df.shape[0]
     tot_citation = df['citation_count'].sum()
-    print("Total {:,} publications with {:,} of citations".format(
-        tot_pub, tot_citation))
+    tot_noself_citation = df['citation_count_without_self_citations'].sum()
+    print(f"Total {tot_pub:,} publications with "
+          f"a total of {tot_citation:,} citations and "
+          f"{tot_noself_citation:,} without self-citations")

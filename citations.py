@@ -33,6 +33,7 @@ def citations(id_type, id_value, debug=False):
         arxiv_category = meta['arxiv_eprints'][0]['categories'][0]
         prepring_date = meta['preprint_date']
     except KeyError:
+        print("No arxiv info found for INSPIRE ID: ", id_value)
         arxiv_eprint = arxiv_category = prepring_date = "N/A"
 
     # replace preprint date with the publication date

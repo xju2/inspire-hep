@@ -17,6 +17,17 @@ def correct_lhc_authors(bib_tex):
     writer = BibTexWriter()
     return writer.write(bib_data)
 
+def get_author_list(bib_str):
+    bib_entry = bibtexparser.loads(bib_str)
+    bib_entry = bib_entry.entries[0]
+
+    if "author" in bib_entry:
+        return bib_entry["author"]
+    elif "collaboration" in bib_entry:
+        return bib_entry["collaboration"]
+    else:
+        return None
+
 def reformat(bib_file):
     if not os.path.exists(bib_file):
         print(f"{bib_file} does not exist.")
@@ -32,6 +43,37 @@ def reformat(bib_file):
     writer = BibTexWriter()
     with open(bib_file, 'w') as f:
         f.write(writer.write(bib_data))
+
+def get_paper_url(bib_str):
+    bib_entry = bibtexparser.loads(bib_str)
+    bib_entry = bib_entry.entries[0]
+
+    if 'doi' in bib_entry:
+        return f"https://doi.org/{bib_entry['doi']}"
+    elif 'arxiv_eprint' in bib_entry:
+        return f"https://arxiv.org/abs/{bib_entry['arxiv_eprint']}"
+    elif 'eprint' in bib_entry:
+        return f"https://arxiv.org/abs/{bib_entry['eprint']}"
+    else:
+        return None
+
+def get_citation_info(bib_str):
+    bib_entry = bibtexparser.loads(bib_str)
+    bib_entry = bib_entry.entries[0]
+    if "journal" in bib_entry:
+        j_data = [bib_entry['journal'], bib_entry['volume'],
+                  f"({bib_entry['year']})"]
+        if "numbers" in bib_entry:
+            j_data.append(f"no.{bib_entry['numbers']}")
+        if "pages" in bib_entry:
+            j_data.append(f"{bib_entry['pages']}")
+        journal = " ".join(j_data)
+    elif "eprint" in bib_entry:
+        journal = f"arxiv:{bib_entry['eprint']}"
+    else:
+        journal = None
+    return journal
+
 
 if __name__ == '__main__':
     import argparse

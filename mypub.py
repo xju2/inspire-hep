@@ -1,5 +1,5 @@
-inspire_ids = [2663239]
 old_inspire_ids = [
+    2663239,
     2054702,
     2652609,
     2643799,
@@ -40,3 +40,5 @@ old_inspire_ids = [
     897002,
     872570,
 ]
+
+inspire_ids = old_inspire_ids

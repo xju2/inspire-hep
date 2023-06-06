@@ -21,6 +21,10 @@ def citations(id_type, id_value, debug=False):
         bibtex = bibtex.decode("utf-8")
         bibtex = bibHelper.correct_lhc_authors(bibtex)
 
+    # authors
+    authors = [author["full_name"] for author in meta['authors']]
+    authors = ", ".join(authors)
+
     # maybe the paper is not submitted to a journal yet
     try:
         doi = meta['dois'][0]['value']
@@ -53,6 +57,7 @@ def citations(id_type, id_value, debug=False):
         "title": meta['titles'][0]['title'],
         "bibtex": bibtex,
         "inspire_id": data['id'],
+        "authors": authors,
     }
 
 if __name__ == "__main__":

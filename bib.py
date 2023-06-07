@@ -21,10 +21,19 @@ def get_author_list(bib_str):
     bib_entry = bibtexparser.loads(bib_str)
     bib_entry = bib_entry.entries[0]
 
-    if "author" in bib_entry:
-        return bib_entry["author"]
+    if "author" in bib_entry and bib_entry["author"] != "":
+        authors = bib_entry["author"].split("and")
+        authors = [a.strip() for a in authors]
+        new_authors = []
+        for author in authors:
+            if "," in author:
+                author = author.split(",")
+                author = f"{author[1].strip()} {author[0].strip()}"
+            new_authors.append(author)
+        return new_authors
+
     elif "collaboration" in bib_entry:
-        return bib_entry["collaboration"]
+        return [bib_entry["collaboration"] + " Collaboration"]
     else:
         return None
 

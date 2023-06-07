@@ -40,7 +40,12 @@ class PublicationWriter:
 
         venue = paper_info.cite_info
         inspire_id = paper_info.inspire_id
+
         authors = paper_info.authors
+        if len(authors) > 3:
+            authors = authors[:3] + [" et al."]
+        authors = ', '.join(authors)
+
         out = '\n'.join([
             '---',
             f'title: "{title}"',

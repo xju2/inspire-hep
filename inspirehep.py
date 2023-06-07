@@ -39,7 +39,7 @@ class InspireHepLiterature:
         bibtex = bibHelper.correct_lhc_authors(bibtex)
 
         # authors
-        authors = bibHelper.correct_lhc_authors(bibtex)
+        authors = bibHelper.get_author_list(bibtex)
 
         # maybe the paper is not submitted to a journal yet
         doi = meta['dois'][0]['value'] if "dois" in meta else "N/A"

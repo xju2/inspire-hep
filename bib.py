@@ -29,6 +29,8 @@ def get_author_list(bib_str):
             if "," in author:
                 author = author.split(",")
                 author = f"{author[1].strip()} {author[0].strip()}"
+            if "others" in author:
+                author = "et al."
             new_authors.append(author)
         return new_authors
 

@@ -54,6 +54,7 @@ class PublicationWriter:
             f"link: {link}",
             f'inspire_id: {inspire_id}',
             f"authors: {authors}",
+            f"bibtex: {repr(paper_info.bibtex)}",
             '---'
         ])
         return [date, out]

@@ -15,7 +15,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="update my publication")
     add_arg = parser.add_argument
     add_arg("-o", '--outdir', help="output directory", default='publications')
-    add_arg("-m", '--mode', help="update mode", default='a', choices=['a', 'u'])
+    add_arg("-m", '--mode', help="update mode", default='u', choices=['a', 'u'])
     add_arg("-w", '--workers', help="number of workers", default=1, type=int)
     args = parser.parse_args()
 

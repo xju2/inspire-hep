@@ -35,14 +35,14 @@ def citations(id_type, id_value, debug=False):
     try:
         arxiv_eprint = meta['arxiv_eprints'][0]['value']
         arxiv_category = meta['arxiv_eprints'][0]['categories'][0]
-        prepring_date = meta['preprint_date']
+        preprint_date = meta['preprint_date']
     except KeyError:
         print("No arxiv info found for INSPIRE ID: ", id_value)
-        arxiv_eprint = arxiv_category = prepring_date = "N/A"
+        arxiv_eprint = arxiv_category = preprint_date = "N/A"
 
     # replace preprint date with the publication date
     try:
-        prepring_date = meta['imprint'][0]['date']
+        preprint_date = meta['imprint'][0]['date']
     except KeyError:
         pass
 
@@ -53,7 +53,7 @@ def citations(id_type, id_value, debug=False):
         "doi": doi,
         "arxiv_eprints": arxiv_eprint,
         "arxiv_category": arxiv_category,
-        'preprint_date': prepring_date,
+        'preprint_date': preprint_date,
         "title": meta['titles'][0]['title'],
         "bibtex": bibtex,
         "inspire_id": data['id'],

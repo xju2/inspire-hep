@@ -38,7 +38,7 @@ class PublicationWriter:
         if not re.match(r'\d{4}-\d{2}-\d{2}', date):
             date += "-01"
 
-        venue = paper_info.cite_info
+        venue = paper_info.cite_info.replace("arxiv", "arXiv")
         inspire_id = paper_info.inspire_id
 
         authors = paper_info.authors

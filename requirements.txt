@@ -1,1 +1,4 @@
 bibtexparser
+ruff
+jupyterlab
+requests_html

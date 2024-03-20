@@ -1,5 +1,4 @@
 {
-    "python.linting.flake8Enabled": true,
-    "python.linting.enabled": true,
-    "files.trimTrailingWhitespace": true
+    "files.trimTrailingWhitespace": true,
+    "sarif-viewer.connectToGithubCodeScanning": "off"
 }

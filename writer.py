@@ -28,8 +28,8 @@ class PublicationWriter:
 
     def add(self, record_id: str | int):
         paper_info: PaperData = None
-        if record_id in self.local_data:
-            paper_data = self.local_data.get(record_id)
+        if str(record_id) in self.local_data:
+            paper_data = self.local_data.get(str(record_id))
             paper_info = PaperData(**paper_data)
         else:
             paper_info = get_arxiv_data(str(record_id))
@@ -49,8 +49,10 @@ class PublicationWriter:
         # use the doi url as the link if possible
         if paper_info.doi != "N/A":
             link = f"https://doi.org/{paper_info.doi}"
-        else:
+        elif paper_info.inspire_id != "N/A":
             link = f"https://inspirehep.net/literature/{paper_info.inspire_id}"
+        else:
+            link = f"https://arxiv.org/abs/{paper_info.arxiv_eprints}"
 
         date = paper_info.preprint_date
         # if date is not in the format of YYYY-MM-DD, add '-01' to the end

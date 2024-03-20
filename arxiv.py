@@ -2,6 +2,7 @@
 
 import asyncio
 import re
+from datetime import datetime
 from urllib.parse import urlparse
 
 import requests
@@ -69,7 +70,7 @@ def get_arxiv_data(index: str) -> PaperData:
     inspire_url = f"https://inspirehep.net/arxiv/{arxiv_index}"
     inspire_id = asyncio.run(get_inspire_id(inspire_url))
 
-    if inspire_id is not None:
+    if inspire_id is not None and inspire_id != "None":
         inspire_id = int(inspire_id)
         return get_inspire_data(inspire_id)
 
@@ -78,10 +79,10 @@ def get_arxiv_data(index: str) -> PaperData:
     # then parse the html data to get the metadata
     soup = BeautifulSoup(data, "html.parser")
 
-    title = soup.find_all("span", "descriptor")[0].next_sibling.get_text()
-    authors = soup.find_all("span", "descriptor")[1].next_sibling.get_text()
+    title = soup.find_all("h1", "title mathjax")[0].contents[1]
+    authors = [x.text for x in soup.find_all("div", "authors")[0].find_all("a")]
 
-    arxiv_doi = soup.find_all("td", "tablecell arxivdoi")[0].find_all("a")[0].get("href")
+    # arxiv_doi = soup.find_all("td", "tablecell arxivdoi")[0].find_all("a")[0].get("href")
     journal_ref = "N/A"
     paper_doi = "N/A"
     for label in soup.find_all("td", "tablecell label"):
@@ -90,14 +91,13 @@ def get_arxiv_data(index: str) -> PaperData:
             journal_ref = label.next_sibling.next_sibling.get_text()
         if "DOI" in label_text:
             paper_doi = label.next_sibling.next_sibling.find_all("a")[0].get("href")
-    if paper_doi == "N/A":
-        paper_doi = arxiv_doi
 
     category = soup.find_all("span", "primary-subject")[0].text
     category = re.search(r"\((.*)\)", category).group(1)
     preprint_date = re.search(
         r"(\d+ \w+ \d+)", soup.find_all("div", "submission-history")[0].text
     ).group(1)
+    preprint_date = datetime.strptime(preprint_date, "%d %b %Y").date().strftime("%Y-%m-%d")
 
     # get cite count from google scholar
     cite_url = f"https://scholar.google.com/scholar?q=arXiv:{arxiv_index}"

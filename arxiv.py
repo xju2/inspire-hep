@@ -109,6 +109,7 @@ def get_arxiv_data(index: str) -> PaperData:
 
     # try to get as much information as possible for the PaperData
     paper_data = {
+        "record_id": index,
         "texkeys": "",
         "citation_count": cite_count,
         "citation_count_without_self_citations": -1,
@@ -121,6 +122,7 @@ def get_arxiv_data(index: str) -> PaperData:
         "inspire_id": "N/A",
         "authors": authors,
         "cite_info": f"arXiv:{arxiv_index}" if journal_ref == "N/A" else journal_ref,
+        "url": arxiv_url,
     }
 
     return PaperData(**paper_data)

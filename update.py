@@ -20,6 +20,7 @@ if __name__ == "__main__":
     time_stamp = time.strftime("%Y%m%d-%H%M%S", time.localtime())
 
     writer = PublicationWriter(outdir=outdir, mode=args.mode)
-    writer.add_all(inspire_ids)
+    record_ids = [str(i) for i in inspire_ids]
+    writer.add_all(record_ids)
     writer.write()
     writer.save()

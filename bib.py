@@ -1,21 +1,20 @@
 import os
+
 import bibtexparser
 from bibtexparser.bwriter import BibTexWriter
+
 
 def correct_lhc_authors(bib_tex):
     bib_data = bibtexparser.loads(bib_tex)
     entry = bib_data.entries[0]
     if "collaboration" in entry:
         # remove author and keep collaboration
-        entry['author'] = ""
-
-        # entry['author'] = entry['collaboration'] + " Collaboration"
-        # print(entry['collaboration'])
-        # del entry['collaboration']
+        entry["author"] = ""
     bib_data.entries = [entry]
 
     writer = BibTexWriter()
     return writer.write(bib_data)
+
 
 def get_author_list(bib_str):
     bib_entry = bibtexparser.loads(bib_str)
@@ -31,13 +30,15 @@ def get_author_list(bib_str):
                 author = f"{author[1].strip()} {author[0].strip()}"
             if "others" in author:
                 author = "et al."
+            if "\n" in author:
+                author = author.replace("\n", " ")
             new_authors.append(author)
         return new_authors
 
-    elif "collaboration" in bib_entry:
+    if "collaboration" in bib_entry:
         return [bib_entry["collaboration"] + " Collaboration"]
-    else:
-        return None
+    return None
+
 
 def reformat(bib_file):
     if not os.path.exists(bib_file):
@@ -52,27 +53,28 @@ def reformat(bib_file):
 
     # write the updated bib into file
     writer = BibTexWriter()
-    with open(bib_file, 'w') as f:
+    with open(bib_file, "w") as f:
         f.write(writer.write(bib_data))
+
 
 def get_paper_url(bib_str):
     bib_entry = bibtexparser.loads(bib_str)
     bib_entry = bib_entry.entries[0]
 
-    if 'doi' in bib_entry:
+    if "doi" in bib_entry:
         return f"https://doi.org/{bib_entry['doi']}"
-    elif 'arxiv_eprint' in bib_entry:
+    if "arxiv_eprint" in bib_entry:
         return f"https://arxiv.org/abs/{bib_entry['arxiv_eprint']}"
-    elif 'eprint' in bib_entry:
+    if "eprint" in bib_entry:
         return f"https://arxiv.org/abs/{bib_entry['eprint']}"
-    else:
-        return None
+    return None
+
 
 def get_citation_info(bib_str):
     bib_entry = bibtexparser.loads(bib_str)
     bib_entry = bib_entry.entries[0]
     if "journal" in bib_entry:
-        j_data = [bib_entry['journal'], bib_entry['volume'],
+        j_data = [bib_entry["journal"], bib_entry["volume"],
                   f"({bib_entry['year']})"]
         if "numbers" in bib_entry:
             j_data.append(f"no.{bib_entry['numbers']}")
@@ -86,9 +88,9 @@ def get_citation_info(bib_str):
     return journal
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     import argparse
-    parser = argparse.ArgumentParser(description='Test')
+    parser = argparse.ArgumentParser(description="Test")
     add_arg = parser.add_argument
 
     args = parser.parse_args()
@@ -96,7 +98,7 @@ if __name__ == '__main__':
     bib_tex = """@article{CMS:2019ybf,
     author = "Sirunyan, Albert M and others",
     collaboration = "CMS",
-    title = "{Searches for physics beyond the standard model with the $M_\mathrm{T2}$ variable in hadronic final states with and without disappearing tracks in proton-proton collisions at $\sqrt{s}=$ 13 TeV}",
+    title = "{Searches for physics beyond the standard model with the}",
     eprint = "1909.03460",
     archivePrefix = "arXiv",
     primaryClass = "hep-ex",

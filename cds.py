@@ -2,7 +2,9 @@
 
 from datetime import datetime
 
+import bibtexparser
 import requests
+from bibtexparser.bwriter import BibTexWriter
 from bs4 import BeautifulSoup
 
 from paper import PaperData
@@ -53,7 +55,6 @@ def get_cds_data(index: str) -> dict:
 
     if index[:4] == "cds:":
         cds_id = index[4:]
-        print(f"Getting CDS data for {cds_id}")
     else:
         print(f"ERROR: invalid CDS index: {index}")
 
@@ -67,9 +68,13 @@ def get_cds_data(index: str) -> dict:
     preprint_date = datetime.strptime(preprint_date, "%d %b %Y").date().strftime("%Y-%m-%d")
 
     bib_text = get_cds_bibtext(cds_id)
+    bib_writer = BibTexWriter()
+    bib_text = bib_writer.write(bibtexparser.loads(bib_text))
+
     texkeys = bib_text.split(",")[0].split("{")[-1]
 
     paper_data = {
+        "record_id": index,
         "texkeys": texkeys,
         "citation_count": -1,
         "citation_count_without_self_citations": -1,
@@ -82,5 +87,6 @@ def get_cds_data(index: str) -> dict:
         "inspire_id": "N/A",
         "authors": authors,
         "cite_info": journal_ref,
+        "url": f"https://cds.cern.ch/record/{cds_id}",
     }
     return PaperData(**paper_data)

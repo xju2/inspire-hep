@@ -1,6 +1,6 @@
 """InspireHep class for the inspirehep API."""
 
-import pprint
+
 import time
 from multiprocessing import Pool
 
@@ -9,24 +9,11 @@ import requests
 import bib as bibHelper
 from paper import PaperData
 
-pp = pprint.PrettyPrinter(indent=2)
-
-allowed_id_types = [
-    "literature",
-    "authors",
-    "institutions",
-    "conferences",
-    "seminars",
-    "journals",
-    "jobs",
-    "experiments",
-    "data",
-]
 allowed_rate = 15  # 15 requests per 5 seconds
 sleep_time = 5 / allowed_rate  # sleep time between requests in seconds
 
 
-def get_inspire_data(recid: int) -> PaperData:
+def get_inspire_data(recid: str) -> PaperData:
     """Get the metadata for a given recid."""
     inspire_api = f"https://inspirehep.net/api/literature/{recid}"
 
@@ -63,6 +50,7 @@ def get_inspire_data(recid: int) -> PaperData:
     cite_info = bibHelper.get_citation_info(bibtex)
 
     out_data = {
+        "record_id": recid,
         "texkeys": meta["texkeys"][0],
         "citation_count": meta["citation_count"],
         "citation_count_without_self_citations": meta["citation_count_without_self_citations"],
@@ -75,6 +63,7 @@ def get_inspire_data(recid: int) -> PaperData:
         "inspire_id": data["id"],
         "authors": authors,
         "cite_info": cite_info,
+        "url": f"https://inspirehep.net/literature/{recid}" if arxiv_eprint == "N/A" else f"https://arxiv.org/abs/{arxiv_eprint}",
     }
 
     # add a sleep time so that we don't exceed the rate limit
@@ -96,6 +85,7 @@ class InspireHepLiterature:
 
 if __name__ == "__main__":
     import argparse
+    import pprint
 
     parser = argparse.ArgumentParser(description="Fetch citations for HEP articles")
     add_arg = parser.add_argument
@@ -104,4 +94,5 @@ if __name__ == "__main__":
     args = parser.parse_args()
     res = get_inspire_data(args.id_value)
     print("\n")
+    pp = pprint.PrettyPrinter(indent=2)
     pp.pprint(res)

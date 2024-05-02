@@ -15,3 +15,7 @@ class PaperData:
     inspire_id: str
     authors: str
     cite_info: str
+
+    def __post_init__(self):
+        assert self.title, "Title cannot be empty."
+        assert self.authors, "Authors cannot be empty."

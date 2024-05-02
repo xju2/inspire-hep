@@ -1,13 +1,14 @@
 from __future__ import annotations
 
+import dataclasses
 import json
 import re
 from pathlib import Path
-import dataclasses
 
 from arxiv import get_arxiv_data
 from inspirehep import get_inspire_data
 from paper import PaperData
+from cds import get_cds_data
 
 
 class PublicationWriter:
@@ -32,10 +33,13 @@ class PublicationWriter:
             paper_data = self.local_data.get(str(record_id))
             paper_info = PaperData(**paper_data)
         else:
-            paper_info = get_arxiv_data(str(record_id))
-            if paper_info is None:
-                # try inspire hep
-                paper_info = get_inspire_data(record_id)
+            if record_id[:3] == "cds":
+                paper_info = get_cds_data(record_id)
+            else:
+                paper_info = get_arxiv_data(str(record_id))
+                if paper_info is None:
+                    # try inspire hep
+                    paper_info = get_inspire_data(record_id)
             self.local_data[record_id] = dataclasses.asdict(paper_info)
 
         bib_entry = paper_info.bibtex

@@ -6,9 +6,9 @@ import re
 from pathlib import Path
 
 from arxiv import get_arxiv_data
+from cds import get_cds_data
 from inspirehep import get_inspire_data
 from paper import PaperData
-from cds import get_cds_data
 
 
 class PublicationWriter:

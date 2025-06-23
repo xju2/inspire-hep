@@ -3,3 +3,5 @@ ruff
 jupyterlab
 requests_html
 prettyprinter
+lxml[html_clean]
+pre-commit

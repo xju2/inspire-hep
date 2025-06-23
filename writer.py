@@ -71,7 +71,8 @@ class PublicationWriter:
         self.pub_data = []
 
     def add(self, record_id: str):
-        paper_info: PaperData = None
+        paper_info: PaperData | None = None
+        record_id = record_id.strip().lower()
         if record_id in self.local_data:
             paper_data = self.local_data.get(record_id)
             paper_info = PaperData(**paper_data)
@@ -93,7 +94,7 @@ class PublicationWriter:
 
         if record_id not in self.local_metadata:
             self.local_metadata["TotalRecords"] += 1
-            self.local_metadata[record_id] = f"{date}-p{self.local_metadata["TotalRecords"]}.md"
+            self.local_metadata[record_id] = f"{date}-p{self.local_metadata['TotalRecords']}.md"
 
         bib_entry = paper_info.bibtex
         self.bib_data.append(bib_entry)
@@ -111,6 +112,9 @@ class PublicationWriter:
 
         # write pub file
         for pub in self.pub_data:
+            if pub.record_id not in self.local_metadata:
+                print(f"Warning: {pub.record_id} not found in local metadata. Skipping.")
+                continue
             filename = self.local_metadata[pub.record_id]
             with open(self.outdir / filename, mode) as f:
                 f.write(generate_pub_data(pub))

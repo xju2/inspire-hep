@@ -1,4 +1,9 @@
-inspire_ids: list[str] = [
+from __future__ import annotations
+
+inspire_ids: list[str | int] = [
+    2901447,
+    "arXiv:2504.04670",
+    2867071,
     "cds:2815578",
     "cds:2882507",
     "cds:2871986",
